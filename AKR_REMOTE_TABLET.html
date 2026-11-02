@@ -396,7 +396,7 @@ onAuthStateChanged(auth,user=>{
  const ok=user?.uid===TABLET_UID;
 
  $('loginScreen').style.display=ok?'none':'block';
- $('appScreen').style.display=ok?'flex';
+ $('appScreen').style.display=ok?'flex':'none';
 
  if(ok){
   subscribeCommands();
