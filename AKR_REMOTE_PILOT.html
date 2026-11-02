@@ -55,7 +55,7 @@ button:disabled{opacity:.5}
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-import {getDatabase,ref,set} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+import {getDatabase,ref,set,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
 
 const config={
  apiKey:'AIzaSyCU1FXL73n3NXloigcNEBREIYfClktYLbQ',
@@ -107,7 +107,7 @@ $('start').onclick=async()=>{
    id:crypto.randomUUID(),
    crew,
    os:$('os').value,
-   issuedAt:Date.now()
+   issuedAt:serverTimestamp()
   };
   await set(ref(db,'remote/command'),cmd);
   msg('Polecenie wysłane do Firebase. To nie potwierdza jeszcze odbioru przez tablet.');
