@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AKR REMOTE PILOT v2</title>
+<title>AKR REMOTE PILOT v3</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -49,11 +49,16 @@ button:disabled{opacity:.4;cursor:not-allowed}
 #login,#logout{background:#444}
 #panel{display:none}
 .status{
+ display:none;
  padding:15px;
  background:#242424;
  border-radius:12px;
  margin-top:18px;
  line-height:1.5;
+}
+.status.error{
+ display:block;
+ background:#521818;
 }
 .connection{
  margin-top:12px;
@@ -74,7 +79,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <body>
 <div class="wrap">
 <h1>AKR <span style="color:#ff4141">REMOTE PILOT</span> 📱</h1>
-<p class="muted">v2 · START / STOP OS / ODBLOKUJ</p>
+<p class="muted">v3 · START / STOP OS / ODBLOKUJ</p>
 
 <div id="authBox">
  <label>E-mail PILOTA</label>
@@ -115,17 +120,15 @@ button:disabled{opacity:.4;cursor:not-allowed}
  <button id="unlock">🔓 ODBLOKUJ OS</button>
 
  <p class="warning">
-  Wersja testowa. Polecenie wysłane do Firebase
-  nie oznacza jeszcze potwierdzenia wykonania
+  Wersja testowa. Wysłanie polecenia do Firebase
+  nie oznacza jeszcze potwierdzenia jego wykonania
   przez tablet.
  </p>
 
  <button id="logout">WYLOGUJ</button>
 </div>
 
-<div class="status" id="status">
- Zaloguj się kontem PILOTA.
-</div>
+<div class="status" id="status" role="alert"></div>
 </div>
 
 <script type="module">
@@ -166,7 +169,11 @@ const $=id=>document.getElementById(id);
 let connected=false;
 let busy=false;
 
-const msg=s=>$('status').textContent=s;
+function message(text,isError=false){
+ const box=$('status');
+ box.textContent=text;
+ box.className=isError?'status error':'status';
+}
 
 function updateControls(){
  const authorized=auth.currentUser?.uid===PILOT_UID;
@@ -189,8 +196,10 @@ onValue(ref(db,'.info/connected'),snap=>{
  connected=snap.val()===true;
  updateControls();
 
- if(!connected){
-  msg('BRAK POŁĄCZENIA Z FIREBASE');
+ if(!connected && auth.currentUser){
+  message('BRAK POŁĄCZENIA Z FIREBASE',true);
+ }else if(connected){
+  message('');
  }
 });
 
@@ -202,11 +211,13 @@ onAuthStateChanged(auth,user=>{
 
  updateControls();
 
- msg(ok
-  ? 'PILOT GOTOWY. Wybierz OS i numer załogi.'
-  : user
-   ? 'To nie jest konto PILOTA.'
-   : 'Zaloguj się kontem PILOTA.');
+ if(ok){
+  message('');
+ }else if(user){
+  message('To nie jest konto PILOTA.',true);
+ }else{
+  message('');
+ }
 });
 
 $('login').onclick=async()=>{
@@ -218,7 +229,7 @@ $('login').onclick=async()=>{
   );
   $('password').value='';
  }catch(e){
-  msg('Błąd logowania: '+e.code);
+  message('Błąd logowania: '+e.code,true);
  }
 };
 
@@ -226,12 +237,12 @@ $('logout').onclick=()=>signOut(auth);
 
 async function sendCommand(type){
  if(auth.currentUser?.uid!==PILOT_UID){
-  msg('BRAK UPRAWNIEŃ PILOTA');
+  message('BRAK UPRAWNIEŃ PILOTA',true);
   return;
  }
 
  if(!connected || busy){
-  msg('BRAK POŁĄCZENIA LUB TRWA WYSYŁANIE');
+  message('BRAK POŁĄCZENIA LUB TRWA WYSYŁANIE',true);
   return;
  }
 
@@ -239,12 +250,13 @@ async function sendCommand(type){
  const os=$('os').value;
 
  if(type==='START' && !/^\d{1,4}$/.test(crew)){
-  msg('Wpisz numer załogi: 1–4 cyfry.');
+  message('Wpisz numer załogi: 1–4 cyfry.',true);
   return;
  }
 
  busy=true;
  updateControls();
+ message('');
 
  try{
   const command={
@@ -261,16 +273,11 @@ async function sendCommand(type){
   await set(ref(db,'remote/command'),command);
 
   if(type==='START'){
-   msg('START wysłany · '+os+
-    ' · ZAŁOGA '+crew);
-  }else if(type==='STOP'){
-   msg('STOP OS wysłany do Firebase.');
-  }else{
-   msg('ODBLOKUJ OS wysłany do Firebase.');
+   $('crew').value='';
   }
 
  }catch(e){
-  msg('Błąd wysyłki: '+e.message);
+  message('Błąd wysyłki: '+e.message,true);
  }finally{
   busy=false;
   updateControls();
@@ -280,17 +287,13 @@ async function sendCommand(type){
 $('start').onclick=()=>sendCommand('START');
 
 $('stop').onclick=()=>{
- if(confirm(
-  'Wysłać STOP OS? Tablet powinien przerwać odliczanie i zablokować START.'
- )){
+ if(confirm('Wysłać STOP OS?')){
   sendCommand('STOP');
  }
 };
 
 $('unlock').onclick=()=>{
- if(confirm(
-  'Odblokować OS i pozwolić na kolejne START-y?'
- )){
+ if(confirm('Odblokować OS?')){
   sendCommand('UNLOCK');
  }
 };
