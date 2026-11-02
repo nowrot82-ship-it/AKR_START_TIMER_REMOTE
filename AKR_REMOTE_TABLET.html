@@ -4,23 +4,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AKR REMOTE TABLET</title>
+<title>AKR REMOTE TABLET v2</title>
 <style>
 *{box-sizing:border-box}
 html,body{
- margin:0;width:100%;height:100%;
- background:#000;color:#fff;
+ margin:0;
+ width:100%;
+ height:100%;
+ background:#000;
+ color:#fff;
  font-family:Arial,Helvetica,sans-serif;
+ overflow:hidden;
 }
-body{overflow:hidden}
-#screen{
- height:100dvh;
+body{
  display:flex;
  flex-direction:column;
+}
+#loginScreen{
+ width:100%;
+ max-width:500px;
+ margin:auto;
+ padding:24px;
+}
+h1{font-size:28px}
+input,button{
+ width:100%;
+ padding:15px;
+ margin:8px 0;
+ border-radius:10px;
+ font-size:19px;
+}
+input{
+ background:#222;
+ color:white;
+ border:1px solid #777;
+}
+button{
+ border:0;
+ color:white;
+ font-weight:900;
+ cursor:pointer;
+}
+#loginBtn{background:#444}
+#appScreen{
+ display:none;
+ width:100%;
+ height:100%;
+ flex-direction:column;
+}
+#top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:10px 18px;
+ gap:12px;
+ font-size:15px;
+ color:#aaa;
+}
+#status{
+ text-align:center;
+ font-size:16px;
+ color:#ddd;
+ padding:6px 12px;
+}
+#display{
+ flex:1;
+ display:flex;
  align-items:center;
  justify-content:center;
- text-align:center;
- padding:12px;
+ overflow:hidden;
+ min-height:0;
 }
 #clock{
  font-size:min(21vw,45dvh);
@@ -30,116 +83,87 @@ body{overflow:hidden}
  white-space:nowrap;
  line-height:1;
 }
-#count{
+#countdown{
  display:none;
  font-size:min(65vw,82dvh);
  font-weight:900;
+ color:#ff2424;
  font-variant-numeric:tabular-nums;
  line-height:1;
 }
 #go{
  display:none;
- font-size:min(40vw,70dvh);
+ font-size:min(44vw,70dvh);
  font-weight:900;
+ color:#00f060;
  line-height:1;
 }
-#crewInfo{
- font-size:clamp(18px,3.5vw,42px);
- font-weight:bold;
- margin-top:18px;
-}
-#status{
- position:fixed;
- top:12px;left:12px;right:12px;
+#lockedScreen{
+ display:none;
  text-align:center;
- color:#ddd;
- font-size:15px;
- z-index:5;
+ color:#ff3434;
+ font-size:min(10vw,15dvh);
+ font-weight:900;
+ line-height:1.1;
 }
-#authBox{
- position:fixed;inset:0;
- background:#111;
+#bottom{
  display:flex;
- align-items:center;
- justify-content:center;
- z-index:20;
- padding:20px;
+ gap:12px;
+ padding:10px 18px 18px;
 }
-#authInner{width:min(420px,100%)}
-input,button{
- display:block;
- width:100%;
- padding:15px;
- margin:12px 0;
- font-size:18px;
- border-radius:10px;
+#bottom button{
+ flex:1;
+ margin:0;
+ font-size:17px;
+ padding:12px;
 }
-input{
- background:#222;
- border:1px solid #666;
- color:#fff;
+#stopBtn{background:#b91c1c}
+#unlockBtn{background:#444}
+#logoutBtn{background:#333}
+#detail{
+ font-size:13px;
+ color:#999;
+ text-align:center;
+ padding:0 12px 6px;
 }
-button{
- border:0;
- background:#444;
- color:#fff;
- font-weight:bold;
- cursor:pointer;
-}
-#stop{
- position:fixed;
- right:16px;
- bottom:16px;
- width:auto;
- background:#a81818;
- padding:12px 20px;
- z-index:10;
-}
-#unlock{
- position:fixed;
- left:16px;
- bottom:16px;
- width:auto;
- background:#444;
- padding:12px 20px;
- z-index:10;
-}
-#note{font-size:14px;color:#aaa}
-.red{background:#bd0000!important}
-.green{background:#008a30!important}
 </style>
 </head>
 <body>
 
-<div id="authBox">
- <div id="authInner">
-  <h1>AKR REMOTE TABLET 💻</h1>
-  <p>Logowanie kontem TABLET</p>
-  <input id="email" type="email"
-    placeholder="tablet@akr-test.example.com"
-    autocomplete="username">
-  <input id="password" type="password"
-    placeholder="Hasło"
-    autocomplete="current-password">
-  <button id="login">ZALOGUJ TABLET</button>
-  <p id="loginStatus"></p>
-  <p id="note">
-   Test komunikacji. Bez zapisu czasów do arkusza.
-  </p>
+<div id="loginScreen">
+ <h1>AKR REMOTE TABLET 🏁</h1>
+ <p>Logowanie stanowiska START</p>
+ <input id="email" type="email"
+  placeholder="tablet@akr-test.example.com">
+ <input id="password" type="password"
+  placeholder="Hasło">
+ <button id="loginBtn">ZALOGUJ</button>
+ <p id="loginStatus"></p>
+</div>
+
+<div id="appScreen">
+ <div id="top">
+  <span>AKR REMOTE TABLET v2</span>
+  <span id="connection">ŁĄCZENIE...</span>
+ </div>
+
+ <div id="status">OCZEKIWANIE NA START</div>
+
+ <div id="display">
+  <div id="clock">00:00:00</div>
+  <div id="countdown">30</div>
+  <div id="go">GO</div>
+  <div id="lockedScreen">STOP<br>OS</div>
+ </div>
+
+ <div id="detail"></div>
+
+ <div id="bottom">
+  <button id="stopBtn">🛑 STOP OS</button>
+  <button id="unlockBtn">🔓 ODBLOKUJ</button>
+  <button id="logoutBtn">WYLOGUJ</button>
  </div>
 </div>
-
-<div id="status">OCZEKIWANIE NA LOGOWANIE</div>
-
-<div id="screen">
- <div id="clock">--:--:--</div>
- <div id="count"></div>
- <div id="go">GO!</div>
- <div id="crewInfo"></div>
-</div>
-
-<button id="unlock">ODBLOKUJ OS</button>
-<button id="stop">STOP OS</button>
 
 <script type="module">
 import {initializeApp}
@@ -148,6 +172,7 @@ import {initializeApp}
 import {
  getAuth,
  signInWithEmailAndPassword,
+ signOut,
  onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 
@@ -175,263 +200,256 @@ const $=id=>document.getElementById(id);
 
 let connected=false;
 let locked=false;
-let mode='idle';
-let countdownStart=0;
-let countdownTimer=null;
-let goTimer=null;
-
-const seenIds=new Set();
-let subscriptionReady=false;
-let lastCommandTimestamp=0;
+let running=false;
+let goVisible=false;
+let lastCommandId=null;
+let initialized=false;
 let serverOffset=0;
-let offsetReady=false;
-let currentCrew='';
-let currentOS='';
+let countdownDeadline=0;
+let countdownFrame=null;
+let goTimeout=null;
+let unsubscribeCommands=null;
 
-const status=s=>$('status').textContent=s;
+function status(s){$('status').textContent=s}
+
+function show(name){
+ for(const id of ['clock','countdown','go','lockedScreen']){
+  $(id).style.display=id===name?'block':'none';
+ }
+}
+
+function cancelTimers(){
+ if(countdownFrame!==null){
+  cancelAnimationFrame(countdownFrame);
+  countdownFrame=null;
+ }
+ if(goTimeout!==null){
+  clearTimeout(goTimeout);
+  goTimeout=null;
+ }
+ running=false;
+ goVisible=false;
+}
 
 function showIdle(){
- document.body.className='';
- $('clock').style.display='block';
- $('count').style.display='none';
- $('go').style.display='none';
- $('crewInfo').textContent='';
- mode='idle';
- tickClock();
+ cancelTimers();
+ if(locked){
+  show('lockedScreen');
+  status('OS ZABLOKOWANY');
+ }else{
+  show('clock');
+  status(connected
+   ? 'POŁĄCZONO · OCZEKIWANIE NA START'
+   : 'BRAK POŁĄCZENIA · START NIEDOSTĘPNY');
+ }
 }
 
-function showCountdown(){
- document.body.className='red';
- $('clock').style.display='none';
- $('count').style.display='block';
- $('go').style.display='none';
- $('crewInfo').textContent=
-  currentOS+' · ZAŁOGA '+currentCrew;
- mode='countdown';
+function stopOS(source){
+ locked=true;
+ showIdle();
+ $('detail').textContent='STOP OS · '+source;
 }
 
-function showGo(){
- document.body.className='green';
- $('clock').style.display='none';
- $('count').style.display='none';
- $('go').style.display='block';
- $('crewInfo').textContent=
-  currentOS+' · ZAŁOGA '+currentCrew;
- mode='go';
+function unlockOS(source){
+ locked=false;
+ showIdle();
+ $('detail').textContent='ODBLOKOWANO · '+source;
+}
 
- status('GO! · START NA ZERZE · TEST');
+function finishCountdown(){
+ if(!running)return;
 
- // GO przez 3 sekundy, potem powrót do zegara.
- clearGoTimer();
- goTimer=setTimeout(()=>{
-  goTimer=null;
+ running=false;
+ goVisible=true;
+ show('go');
+ status('GO!');
+ $('detail').textContent='START!';
+
+ goTimeout=setTimeout(()=>{
+  goTimeout=null;
+  goVisible=false;
   showIdle();
-  status(
-   connected
-    ? 'POŁĄCZONO · OCZEKIWANIE NA START'
-    : 'BRAK POŁĄCZENIA · START ZABLOKOWANY'
-  );
  },3000);
 }
 
-function tickClock(){
- if(mode!=='idle')return;
- $('clock').textContent=
-  new Date().toLocaleTimeString('pl-PL',{
-   hour12:false
-  });
-}
-setInterval(tickClock,200);
-tickClock();
+function tick(){
+ if(!running)return;
 
-function clearCountdown(){
- if(countdownTimer!==null){
-  clearInterval(countdownTimer);
-  countdownTimer=null;
- }
-}
-
-function clearGoTimer(){
- if(goTimer!==null){
-  clearTimeout(goTimer);
-  goTimer=null;
- }
-}
-
-function startCountdown(cmd){
- if(locked || mode!=='idle' || !connected)return;
-
- clearGoTimer();
-
- currentCrew=cmd.crew;
- currentOS=cmd.os;
- countdownStart=performance.now();
-
- showCountdown();
- status(
-  'ODLICZANIE · '+currentOS+
-  ' · ZAŁOGA '+currentCrew
- );
-
- function tick(){
-  const elapsed=performance.now()-countdownStart;
-  const remaining=Math.max(
-   0,
-   Math.ceil((30000-elapsed)/1000)
-  );
-
-  $('count').textContent=String(remaining);
-
-  if(elapsed>=30000){
-   clearCountdown();
-   showGo();
-  }
- }
-
- tick();
- countdownTimer=setInterval(tick,40);
-}
-
-$('stop').onclick=()=>{
- locked=true;
- clearCountdown();
- clearGoTimer();
- showIdle();
- status(
-  'STOP OS · ZABLOKOWANE · WYMAGA ODBLOKOWANIA'
- );
-};
-
-$('unlock').onclick=()=>{
- if(!connected){
-  status('BRAK INTERNETU · NIE MOŻNA ODBLOKOWAĆ');
+ if(!connected || locked){
+  stopOS('UTRATA POŁĄCZENIA');
   return;
  }
 
- locked=false;
- clearCountdown();
- clearGoTimer();
- showIdle();
- status('OS ODBLOKOWANY · GOTOWY NA NOWY START');
-};
+ const remaining=countdownDeadline-performance.now();
 
-$('login').onclick=async()=>{
+ if(remaining<=0){
+  finishCountdown();
+  return;
+ }
+
+ $('countdown').textContent=
+  String(Math.ceil(remaining/1000));
+
+ countdownFrame=requestAnimationFrame(tick);
+}
+
+function startOS(command){
+ if(locked || running || goVisible || !connected)return;
+
+ cancelTimers();
+ running=true;
+ countdownDeadline=performance.now()+30000;
+
+ $('detail').textContent=
+  command.os+' · ZAŁOGA '+command.crew;
+
+ status('ODLICZANIE DO STARTU');
+ show('countdown');
+ tick();
+}
+
+function handleCommand(command){
+ if(!command || !command.id || !command.type)return;
+
+ if(command.id===lastCommandId)return;
+ lastCommandId=command.id;
+
+ if(typeof command.issuedAt!=='number')return;
+
+ const age=Date.now()+serverOffset-command.issuedAt;
+
+ if(age>5000 || age< -2000)return;
+
+ if(command.type==='STOP'){
+  stopOS('PILOT');
+  return;
+ }
+
+ if(command.type==='UNLOCK'){
+  unlockOS('PILOT');
+  return;
+ }
+
+ if(command.type==='START'){
+  if(!/^\d{1,4}$/.test(String(command.crew)))return;
+  if(!/^OS[1-6]$/.test(String(command.os)))return;
+  startOS(command);
+ }
+}
+
+function subscribeCommands(){
+ if(unsubscribeCommands)return;
+
+ unsubscribeCommands=onValue(
+  ref(db,'remote/command'),
+  snapshot=>{
+   const command=snapshot.val();
+
+   if(!initialized){
+    initialized=true;
+    lastCommandId=command?.id||null;
+    return;
+   }
+
+   handleCommand(command);
+  },
+  error=>{
+   status('BŁĄD ODCZYTU POLECEŃ: '+error.code);
+   stopOS('BŁĄD POŁĄCZENIA');
+  }
+ );
+}
+
+function unsubscribeAll(){
+ if(unsubscribeCommands){
+  unsubscribeCommands();
+  unsubscribeCommands=null;
+ }
+ initialized=false;
+ lastCommandId=null;
+}
+
+onValue(ref(db,'.info/serverTimeOffset'),snapshot=>{
+ serverOffset=Number(snapshot.val())||0;
+});
+
+onValue(ref(db,'.info/connected'),snapshot=>{
+ const wasConnected=connected;
+ connected=snapshot.val()===true;
+
+ $('connection').textContent=connected
+  ? '● ONLINE'
+  : '● OFFLINE';
+
+ $('connection').style.color=connected
+  ? '#00e070'
+  : '#ff4444';
+
+ if(wasConnected && !connected){
+  stopOS('UTRATA INTERNETU');
+ }else if(!running && !goVisible && !locked){
+  showIdle();
+ }
+});
+
+onAuthStateChanged(auth,user=>{
+ const ok=user?.uid===TABLET_UID;
+
+ $('loginScreen').style.display=ok?'none':'block';
+ $('appScreen').style.display=ok?'flex';
+
+ if(ok){
+  subscribeCommands();
+  showIdle();
+ }else{
+  unsubscribeAll();
+  cancelTimers();
+  $('loginStatus').textContent=user
+   ? 'To nie jest konto TABLETU.'
+   : 'Zaloguj się kontem TABLETU.';
+ }
+});
+
+$('loginBtn').onclick=async()=>{
  try{
-  $('loginStatus').textContent='Logowanie...';
-
   await signInWithEmailAndPassword(
    auth,
    $('email').value.trim(),
    $('password').value
   );
-
   $('password').value='';
  }catch(e){
   $('loginStatus').textContent=
-   'Błąd: '+e.code;
+   'Błąd logowania: '+e.code;
  }
 };
 
-onAuthStateChanged(auth,user=>{
- if(!user || user.uid!==TABLET_UID){
-  $('authBox').style.display='flex';
-  $('loginStatus').textContent=user
-   ? 'To nie jest konto TABLET. Użyj konta TABLET.'
-   : '';
-  return;
+$('logoutBtn').onclick=()=>signOut(auth);
+
+$('stopBtn').onclick=()=>{
+ stopOS('TABLET · LOKALNIE');
+};
+
+$('unlockBtn').onclick=()=>{
+ if(confirm('Odblokować OS na tablecie?')){
+  unlockOS('TABLET · LOKALNIE');
  }
+};
 
- $('authBox').style.display='none';
- status('ŁĄCZENIE Z FIREBASE...');
-});
+function updateClock(){
+ const now=new Date();
 
-onValue(
- ref(db,'.info/serverTimeOffset'),
- snap=>{
-  if(typeof snap.val()==='number'){
-   serverOffset=snap.val();
-   offsetReady=true;
-  }
- }
-);
+ $('clock').textContent=
+  now.toLocaleTimeString('pl-PL',{
+   hour:'2-digit',
+   minute:'2-digit',
+   second:'2-digit',
+   hour12:false
+  });
+}
 
-onValue(
- ref(db,'.info/connected'),
- snap=>{
-  connected=snap.val()===true;
-
-  if(!connected){
-   clearCountdown();
-   clearGoTimer();
-
-   if(mode==='countdown' || mode==='go'){
-    locked=true;
-    showIdle();
-   }
-
-   status('BRAK POŁĄCZENIA · START ZABLOKOWANY');
-  }else if(locked){
-   status('POŁĄCZONO · STOP OS AKTYWNY');
-  }else if(mode==='idle'){
-   status('POŁĄCZONO · OCZEKIWANIE NA START');
-  }
- }
-);
-
-onValue(ref(db,'remote/command'),snap=>{
- const cmd=snap.val();
-
- // Po otwarciu strony ignorujemy zapisaną
- // wcześniej komendę START.
- if(!subscriptionReady){
-  subscriptionReady=true;
-
-  if(cmd && typeof cmd.id==='string'){
-   seenIds.add(cmd.id);
-   lastCommandTimestamp=
-    Number(cmd.issuedAt)||0;
-  }
-  return;
- }
-
- if(!cmd || typeof cmd!=='object')return;
- if(typeof cmd.id!=='string' || !cmd.id)return;
- if(seenIds.has(cmd.id))return;
-
- // Każde ID obsługujemy najwyżej raz.
- seenIds.add(cmd.id);
-
- if(seenIds.size>300){
-  const oldest=seenIds.values().next().value;
-  seenIds.delete(oldest);
- }
-
- if(auth.currentUser?.uid!==TABLET_UID)return;
- if(!connected || !offsetReady || locked)return;
- if(mode!=='idle')return;
-
- if(typeof cmd.crew!=='string')return;
- if(!/^\d{1,4}$/.test(cmd.crew))return;
- if(!/^OS[1-6]$/.test(cmd.os))return;
- if(typeof cmd.issuedAt!=='number')return;
-
- // Sprawdzenie wieku komendy według czasu serwera.
- const nowServer=Date.now()+serverOffset;
- const age=nowServer-cmd.issuedAt;
-
- if(age< -2000 || age>5000){
-  status(
-   'ODRZUCONO SPÓŹNIONY START ('+
-   Math.round(age/1000)+' s)'
-  );
-  return;
- }
-
- if(cmd.issuedAt<=lastCommandTimestamp)return;
- lastCommandTimestamp=cmd.issuedAt;
-
- startCountdown(cmd);
-});
+updateClock();
+setInterval(updateClock,200);
 </script>
 </body>
 </html>
