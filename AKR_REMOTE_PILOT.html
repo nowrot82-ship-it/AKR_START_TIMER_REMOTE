@@ -14,7 +14,7 @@
 <div class="osbox"><div class="muted">AKTYWNY ODCINEK</div><div id="osValue" class="osvalue">—</div><div id="osMeta" class="osmeta">Oczekiwanie na konfigurację CKR…</div>
 <button id="manualToggle" type="button">⚠ AWARYJNA ZMIANA OS</button><div id="manualBox"><p class="warning">Tylko na polecenie CKR przez radio. Ręczny OS nie zmienia Panelu Dowodzenia.</p><label for="manualOS">Wybierz OS</label><select id="manualOS"><option>OS1</option><option>OS2</option><option>OS3</option><option>OS4</option><option>OS5</option><option>OS6</option></select><button id="manualApply" type="button">USTAW AWARYJNIE</button></div><button id="autoReturn" type="button" hidden>WRÓĆ DO OS Z CKR</button></div>
 <label>Numer załogi</label><input id="crew" inputmode="numeric" maxlength="4" placeholder="np. 12"><button id="start">START</button><button id="stop">🛑 STOP OS</button><button id="unlock">🔓 ODBLOKUJ OS</button>
-<p class="warning">Wersja testowa. Wysłanie polecenia do Firebase nie oznacza potwierdzenia wykonania przez tablet. START wymaga potwierdzonego OS i połączenia z Firebase.</p><button id="logout">WYLOGUJ</button></div>
+<button id="logout">WYLOGUJ</button></div>
 <div class="status" id="status" role="alert"></div></div>
 <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog"><h2 id="modalTitle">⚠ ZMIANA OS</h2><p>Panel Dowodzenia zmienił aktywny odcinek:</p><div class="change" id="changeText">— → —</div><p>Potwierdź nowy OS. Do potwierdzenia przycisk START pozostaje zablokowany.</p><button id="confirmOS" type="button">POTWIERDZAM ZMIANĘ OS</button><p class="tiny">STOP OS i ODBLOKUJ pozostają dostępne w pilocie.</p></div></div>
 <script type="module">
