@@ -1,302 +1,67 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AKR REMOTE PILOT v3</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AKR REMOTE PILOT v4 · CENTRAL OS TEST</title>
 <style>
-*{box-sizing:border-box}
-html,body{
- margin:0;
- min-height:100%;
- background:#101010;
- color:white;
- font-family:Arial,Helvetica,sans-serif;
-}
-body{padding:18px}
-.wrap{max-width:560px;margin:auto}
-h1{font-size:28px;margin-bottom:6px}
-.muted{color:#bbb}
-label{
- display:block;
- margin:18px 0 7px;
- font-weight:bold;
-}
-input,select,button{
- display:block;
- width:100%;
- padding:17px;
- border-radius:12px;
- font-size:20px;
-}
-input,select{
- background:#262626;
- color:white;
- border:1px solid #777;
-}
-button{
- margin-top:15px;
- border:0;
- color:white;
- font-weight:900;
- cursor:pointer;
-}
-button:disabled{opacity:.4;cursor:not-allowed}
-#start{background:#15803d;font-size:25px}
-#stop{background:#b91c1c;font-size:25px}
-#unlock{background:#555}
-#login,#logout{background:#444}
-#panel{display:none}
-.status{
- display:none;
- padding:15px;
- background:#242424;
- border-radius:12px;
- margin-top:18px;
- line-height:1.5;
-}
-.status.error{
- display:block;
- background:#521818;
-}
-.connection{
- margin-top:12px;
- padding:12px;
- border-radius:10px;
- background:#551818;
- font-weight:bold;
- text-align:center;
-}
-.connection.online{background:#14532d}
-.warning{
- color:#ffd875;
- font-size:14px;
- line-height:1.5;
-}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#101010;color:#fff;font-family:Arial,Helvetica,sans-serif}body{padding:18px}.wrap{max-width:560px;margin:auto}h1{font-size:28px;margin-bottom:6px}.muted{color:#bbb}label{display:block;margin:18px 0 7px;font-weight:bold}input,select,button{display:block;width:100%;padding:17px;border-radius:12px;font-size:20px}input,select{background:#262626;color:#fff;border:1px solid #777}button{margin-top:15px;border:0;color:white;font-weight:900;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}#start{background:#15803d;font-size:25px}#stop{background:#b91c1c;font-size:25px}#unlock{background:#555}#login,#logout{background:#444}#panel{display:none}.status{display:none;padding:15px;background:#242424;border-radius:12px;margin-top:18px;line-height:1.5}.status.error{display:block;background:#521818}.connection{margin-top:12px;padding:12px;border-radius:10px;background:#551818;font-weight:bold;text-align:center}.connection.online{background:#14532d}.warning{color:#ffd875;font-size:14px;line-height:1.5}.osbox{background:#202020;border:1px solid #555;border-radius:12px;padding:15px;margin-top:14px}.osvalue{font-size:36px;font-weight:900;text-align:center;margin:7px 0}.osmeta{font-size:13px;color:#bbb;text-align:center;line-height:1.5}.osmeta.warn{color:#ffd875}#manualBox{display:none;border-top:1px solid #555;margin-top:14px;padding-top:4px}#manualToggle{background:#4b5563;font-size:15px;padding:12px}#manualApply{background:#a16207;font-size:16px}#autoReturn{background:#166534;font-size:15px}#modal{display:none;position:fixed;z-index:100;inset:0;background:#000d;align-items:center;justify-content:center;padding:18px}#modal.open{display:flex}.dialog{width:min(100%,520px);background:#1d2533;border:2px solid #fbbf24;border-radius:16px;padding:23px;text-align:center;box-shadow:0 12px 50px #000}.dialog h2{color:#fbbf24;font-size:27px;margin:0 0 12px}.dialog .change{font-size:29px;font-weight:900;margin:16px 0}.dialog button{background:#15803d}.dialog p{line-height:1.5}.tiny{font-size:12px;color:#aaa}
 </style>
 </head>
-<body>
-<div class="wrap">
-<h1>AKR <span style="color:#ff4141">REMOTE PILOT</span> 📱</h1>
-<p class="muted">v3 · START / STOP OS / ODBLOKUJ</p>
-
-<div id="authBox">
- <label>E-mail PILOTA</label>
- <input id="email" type="email"
-  placeholder="pilot@akr-test.example.com"
-  autocomplete="username">
-
- <label>Hasło</label>
- <input id="password" type="password"
-  autocomplete="current-password">
-
- <button id="login">ZALOGUJ</button>
-</div>
-
-<div id="panel">
- <div id="connection" class="connection">
-  BRAK POŁĄCZENIA
- </div>
-
- <label>Odcinek specjalny</label>
- <select id="os">
-  <option>OS1</option>
-  <option>OS2</option>
-  <option>OS3</option>
-  <option>OS4</option>
-  <option>OS5</option>
-  <option>OS6</option>
- </select>
-
- <label>Numer załogi</label>
- <input id="crew"
-  inputmode="numeric"
-  maxlength="4"
-  placeholder="np. 12">
-
- <button id="start">START</button>
- <button id="stop">🛑 STOP OS</button>
- <button id="unlock">🔓 ODBLOKUJ OS</button>
-
- <p class="warning">
-  Wersja testowa. Wysłanie polecenia do Firebase
-  nie oznacza jeszcze potwierdzenia jego wykonania
-  przez tablet.
- </p>
-
- <button id="logout">WYLOGUJ</button>
-</div>
-
-<div class="status" id="status" role="alert"></div>
-</div>
-
+<body><div class="wrap">
+<h1>AKR <span style="color:#ff4141">REMOTE PILOT</span> 📱</h1><p class="muted">v4 TEST · CENTRALNY OS · START / STOP OS / ODBLOKUJ</p>
+<div id="authBox"><label>E-mail PILOTA</label><input id="email" type="email" placeholder="pilot@akr-test.example.com" autocomplete="username"><label>Hasło</label><input id="password" type="password" autocomplete="current-password"><button id="login">ZALOGUJ</button></div>
+<div id="panel"><div id="connection" class="connection">BRAK POŁĄCZENIA</div>
+<div class="osbox"><div class="muted">AKTYWNY ODCINEK</div><div id="osValue" class="osvalue">—</div><div id="osMeta" class="osmeta">Oczekiwanie na konfigurację CKR…</div>
+<button id="manualToggle" type="button">⚠ AWARYJNA ZMIANA OS</button><div id="manualBox"><p class="warning">Tylko na polecenie CKR przez radio. Ręczny OS nie zmienia Panelu Dowodzenia.</p><label for="manualOS">Wybierz OS</label><select id="manualOS"><option>OS1</option><option>OS2</option><option>OS3</option><option>OS4</option><option>OS5</option><option>OS6</option></select><button id="manualApply" type="button">USTAW AWARYJNIE</button></div><button id="autoReturn" type="button" hidden>WRÓĆ DO OS Z CKR</button></div>
+<label>Numer załogi</label><input id="crew" inputmode="numeric" maxlength="4" placeholder="np. 12"><button id="start">START</button><button id="stop">🛑 STOP OS</button><button id="unlock">🔓 ODBLOKUJ OS</button>
+<p class="warning">Wersja testowa. Wysłanie polecenia do Firebase nie oznacza potwierdzenia wykonania przez tablet. START wymaga potwierdzonego OS i połączenia z Firebase.</p><button id="logout">WYLOGUJ</button></div>
+<div class="status" id="status" role="alert"></div></div>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog"><h2 id="modalTitle">⚠ ZMIANA OS</h2><p>Panel Dowodzenia zmienił aktywny odcinek:</p><div class="change" id="changeText">— → —</div><p>Potwierdź nowy OS. Do potwierdzenia przycisk START pozostaje zablokowany.</p><button id="confirmOS" type="button">POTWIERDZAM ZMIANĘ OS</button><p class="tiny">STOP OS i ODBLOKUJ pozostają dostępne w pilocie.</p></div></div>
 <script type="module">
-import {initializeApp}
- from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-
-import {
- getAuth,
- signInWithEmailAndPassword,
- signOut,
- onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-
-import {
- getDatabase,
- ref,
- set,
- onValue,
- serverTimestamp
-} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
-
-const firebaseConfig={
- apiKey:'AIzaSyCU1FXL73n3NXloigcNEBREIYfClktYLbQ',
- authDomain:'akr-start-timer-remote.firebaseapp.com',
- databaseURL:
- 'https://akr-start-timer-remote-default-rtdb.europe-west1.firebasedatabase.app',
- projectId:'akr-start-timer-remote',
- appId:'1:463101905862:web:64c889a447de22ece380c7'
-};
-
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getDatabase,ref,set,onValue,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+const firebaseConfig={apiKey:'AIzaSyCU1FXL73n3NXloigcNEBREIYfClktYLbQ',authDomain:'akr-start-timer-remote.firebaseapp.com',databaseURL:'https://akr-start-timer-remote-default-rtdb.europe-west1.firebasedatabase.app',projectId:'akr-start-timer-remote',appId:'1:463101905862:web:64c889a447de22ece380c7'};
 const PILOT_UID='EPNp40d7FVMEMaKJw5nzIPv0h7G3';
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getDatabase(app);
-const $=id=>document.getElementById(id);
-
-let connected=false;
-let busy=false;
-
-function message(text,isError=false){
- const box=$('status');
- box.textContent=text;
- box.className=isError?'status error':'status';
+const OS_URL='https://script.google.com/macros/s/AKfycbwp1H2pmreks-fQzKmxXA3zChlOaBCyIwdqfN3WuNpxjta2f93CBk1UilgCTegTjFDo/exec';
+const OS_KEY='akr_remote_pilot_v4_os';
+const POLL_MS=20000,REQUEST_TIMEOUT_MS=10000,STALE_MS=60000;
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id);
+const validOS=s=>/^OS[1-6]$/.test(String(s));
+let connected=false,busy=false,confirmedOS=null,centralOS=null,pendingOS=null,manual=false,lastSuccess=0,requestActive=false;
+function message(text,isError=false){const b=$('status');b.textContent=text;b.className=isError?'status error':'status';if(text&&!isError)b.style.display='block';else if(!text)b.style.display='none';else b.style.display='block'}
+function saveOS(){try{localStorage.setItem(OS_KEY,JSON.stringify({os:confirmedOS,manual,centralOS}))}catch{}}
+function restoreOS(){try{const x=JSON.parse(localStorage.getItem(OS_KEY)||'null');if(validOS(x?.os)){confirmedOS=x.os;manual=x.manual===true}if(validOS(x?.centralOS))centralOS=x.centralOS}catch{}}
+function osReady(){return validOS(confirmedOS)&&!pendingOS&&(manual||lastSuccess>0&&Date.now()-lastSuccess<STALE_MS)}
+function updateControls(){const authorized=auth.currentUser?.uid===PILOT_UID;const active=authorized&&connected&&!busy;
+ $('start').disabled=!active||!osReady();$('stop').disabled=!active;$('unlock').disabled=!active;
+ $('connection').textContent=connected?'● FIREBASE ONLINE':'● FIREBASE OFFLINE';$('connection').className=connected?'connection online':'connection';
+ $('osValue').textContent=confirmedOS||'—';$('autoReturn').hidden=!manual;
+ let t=manual?'TRYB RĘCZNY · OS ustawiony przez sędziego':'TRYB AUTOMATYCZNY · OS z CKR';
+ if(pendingOS)t+=' · OCZEKUJE NA POTWIERDZENIE';
+ if(!lastSuccess)t+=' · brak odczytu CKR w tej sesji';else if(Date.now()-lastSuccess>=STALE_MS)t+=' · BRAK AKTUALNEGO ODCZYTU CKR';else t+=' · CKR odczyt '+new Date(lastSuccess).toLocaleTimeString('pl-PL');
+ if(manual&&centralOS&&centralOS!==confirmedOS)t+=' · UWAGA: CKR pokazuje '+centralOS;
+ $('osMeta').textContent=t;$('osMeta').className='osmeta'+(manual||pendingOS||!osReady()?' warn':'');
 }
-
-function updateControls(){
- const authorized=auth.currentUser?.uid===PILOT_UID;
- const active=authorized && connected && !busy;
-
- $('start').disabled=!active;
- $('stop').disabled=!active;
- $('unlock').disabled=!active;
-
- $('connection').textContent=connected
-  ? '● FIREBASE ONLINE'
-  : '● FIREBASE OFFLINE';
-
- $('connection').className=connected
-  ? 'connection online'
-  : 'connection';
+function showChange(next){if(!validOS(next)||manual)return;if(next===confirmedOS){pendingOS=null;$('modal').classList.remove('open');updateControls();return}pendingOS=next;$('changeText').textContent=(confirmedOS||'BRAK')+' → '+next;$('modal').classList.add('open');updateControls()}
+function applyCentral(next){if(!validOS(next))return;centralOS=next;if(manual){saveOS();updateControls();return}if(!confirmedOS||confirmedOS!==next)showChange(next);else if(pendingOS){pendingOS=null;$('modal').classList.remove('open')}saveOS();updateControls()}
+// JSONP: skrypt jest dodawany tylko ze stałego, zaufanego adresu AKR.
+function pollOS(){if(requestActive||!navigator.onLine)return;requestActive=true;const callback='AKR_CHRONO_OS_CALLBACK';const old=window[callback];let done=false;const script=document.createElement('script');let timeout;
+ const finish=()=>{if(done)return;done=true;clearTimeout(timeout);script.remove();if(old===undefined)delete window[callback];else window[callback]=old;requestActive=false;updateControls()};
+ window[callback]=data=>{if(data&&data.ok===true&&validOS(data.os)){lastSuccess=Date.now();applyCentral(data.os)}finish()};
+ script.onerror=finish;timeout=setTimeout(finish,REQUEST_TIMEOUT_MS);script.src=OS_URL+'?callback='+encodeURIComponent(callback)+'&_='+Date.now();document.head.appendChild(script)
 }
-
-onValue(ref(db,'.info/connected'),snap=>{
- connected=snap.val()===true;
- updateControls();
-
- if(!connected && auth.currentUser){
-  message('BRAK POŁĄCZENIA Z FIREBASE',true);
- }else if(connected){
-  message('');
- }
-});
-
-onAuthStateChanged(auth,user=>{
- const ok=user?.uid===PILOT_UID;
-
- $('authBox').style.display=ok?'none':'block';
- $('panel').style.display=ok?'block':'none';
-
- updateControls();
-
- if(ok){
-  message('');
- }else if(user){
-  message('To nie jest konto PILOTA.',true);
- }else{
-  message('');
- }
-});
-
-$('login').onclick=async()=>{
- try{
-  await signInWithEmailAndPassword(
-   auth,
-   $('email').value.trim(),
-   $('password').value
-  );
-  $('password').value='';
- }catch(e){
-  message('Błąd logowania: '+e.code,true);
- }
-};
-
+restoreOS();updateControls();pollOS();setInterval(pollOS,POLL_MS);setInterval(updateControls,1000);window.addEventListener('online',pollOS);
+$('confirmOS').onclick=()=>{if(!validOS(pendingOS))return;confirmedOS=pendingOS;pendingOS=null;manual=false;$('modal').classList.remove('open');saveOS();updateControls();message('Potwierdzono '+confirmedOS+'. Kolejne START-y będą wysyłane z tym OS.')};
+$('manualToggle').onclick=()=>{$('manualBox').style.display=$('manualBox').style.display==='block'?'none':'block';$('manualOS').value=confirmedOS||centralOS||'OS1'};
+$('manualApply').onclick=()=>{const next=$('manualOS').value;if(!validOS(next))return;if(!confirm('CKR poleciło awaryjnie ustawić '+next+'?'))return;manual=true;confirmedOS=next;pendingOS=null;$('modal').classList.remove('open');$('manualBox').style.display='none';saveOS();updateControls();message('TRYB AWARYJNY: '+next+'. Sprawdź zgodność z CKR przez radio.',true)};
+$('autoReturn').onclick=()=>{if(!validOS(centralOS)||Date.now()-lastSuccess>=STALE_MS){message('Brak świeżej konfiguracji CKR. Nie można wrócić do automatu.',true);return}if(!confirm('Wrócić do centralnego sterowania OS z CKR?'))return;manual=false;pendingOS=null;if(centralOS!==confirmedOS)showChange(centralOS);saveOS();updateControls()};
+onValue(ref(db,'.info/connected'),snap=>{connected=snap.val()===true;updateControls();if(!connected&&auth.currentUser)message('BRAK POŁĄCZENIA Z FIREBASE',true)});
+onAuthStateChanged(auth,user=>{const ok=user?.uid===PILOT_UID;$('authBox').style.display=ok?'none':'block';$('panel').style.display=ok?'block':'none';updateControls();if(ok){message('');pollOS()}else if(user)message('To nie jest konto PILOTA.',true);else message('')});
+$('login').onclick=async()=>{try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);$('password').value=''}catch(e){message('Błąd logowania: '+e.code,true)}};
 $('logout').onclick=()=>signOut(auth);
-
-async function sendCommand(type){
- if(auth.currentUser?.uid!==PILOT_UID){
-  message('BRAK UPRAWNIEŃ PILOTA',true);
-  return;
- }
-
- if(!connected || busy){
-  message('BRAK POŁĄCZENIA LUB TRWA WYSYŁANIE',true);
-  return;
- }
-
- const crew=$('crew').value.trim();
- const os=$('os').value;
-
- if(type==='START' && !/^\d{1,4}$/.test(crew)){
-  message('Wpisz numer załogi: 1–4 cyfry.',true);
-  return;
- }
-
- busy=true;
- updateControls();
- message('');
-
- try{
-  const command={
-   id:crypto.randomUUID(),
-   type,
-   issuedAt:serverTimestamp()
-  };
-
-  if(type==='START'){
-   command.crew=crew;
-   command.os=os;
-  }
-
-  await set(ref(db,'remote/command'),command);
-
-  if(type==='START'){
-   $('crew').value='';
-  }
-
- }catch(e){
-  message('Błąd wysyłki: '+e.message,true);
- }finally{
-  busy=false;
-  updateControls();
- }
-}
-
-$('start').onclick=()=>sendCommand('START');
-
-$('stop').onclick=()=>{
- if(confirm('Wysłać STOP OS?')){
-  sendCommand('STOP');
- }
-};
-
-$('unlock').onclick=()=>{
- if(confirm('Odblokować OS?')){
-  sendCommand('UNLOCK');
- }
-};
-</script>
-</body>
-</html>
+async function sendCommand(type){if(auth.currentUser?.uid!==PILOT_UID){message('BRAK UPRAWNIEŃ PILOTA',true);return}if(!connected||busy){message('BRAK POŁĄCZENIA LUB TRWA WYSYŁANIE',true);return}
+ const crew=$('crew').value.trim();if(type==='START'){if(!osReady()){message('START ZABLOKOWANY: potwierdź OS lub sprawdź łączność CKR.',true);return}if(!/^\d{1,4}$/.test(crew)){message('Wpisz numer załogi: 1–4 cyfry.',true);return}}
+ busy=true;updateControls();message('');try{const command={id:crypto.randomUUID(),type,issuedAt:serverTimestamp()};if(type==='START'){command.crew=crew;command.os=confirmedOS}await set(ref(db,'remote/command'),command);if(type==='START')$('crew').value='';message('Polecenie '+type+' wysłane do Firebase'+(type==='START'?' · '+command.os:'')+'. Wykonanie przez tablet nie jest potwierdzone.')}catch(e){message('Błąd wysyłki: '+e.message,true)}finally{busy=false;updateControls()}}
+$('start').onclick=()=>sendCommand('START');$('stop').onclick=()=>{if(confirm('Wysłać STOP OS?'))sendCommand('STOP')};$('unlock').onclick=()=>{if(confirm('Odblokować OS?'))sendCommand('UNLOCK')};
+</script></body></html>
