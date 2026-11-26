@@ -1,105 +1,532 @@
-
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AKR START TIMER v4.5 PRO DISPLAY</title>
 <style>
-/* AKR v4.5 PRO DISPLAY */
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+#loginScreen{width:100%;max-width:500px;margin:auto;padding:24px}
+h1{font-size:28px}
+input,button{width:100%;padding:15px;margin:8px 0;border-radius:10px;font-size:19px}
+input{background:#222;color:white;border:1px solid #777}
+button{border:0;color:white;font-weight:900;cursor:pointer}
+#loginBtn{background:#444}
+#appScreen{display:none;width:100%;height:100%;flex-direction:column;background:#000}
+#top{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;gap:12px;font-size:15px;color:#aaa}
+#status{text-align:center;font-size:16px;color:#ddd;padding:6px 12px}
+#display{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
+#clock{font-size:min(21vw,45dvh);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.09em;white-space:nowrap;line-height:1}
+#countdown{display:none;font-size:min(65vw,82dvh);font-weight:900;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+#go{display:none;font-size:min(44vw,70dvh);font-weight:900;color:#fff;line-height:1}
+#lockedScreen{display:none;text-align:center;color:#fff;font-size:min(10vw,15dvh);font-weight:900;line-height:1.1}
+#bottom{display:flex;gap:12px;padding:10px 18px 18px}
+#bottom button{flex:1;margin:0;font-size:17px;padding:12px}
+#stopBtn{background:#a90000}#unlockBtn{background:#444}#logoutBtn{background:#333}
+#detail{font-size:13px;color:#ddd;text-align:center;padding:0 12px 6px}
+#appScreen.counting{background:#d60000}#appScreen.going{background:#00c83a}#appScreen.stopped{background:#d60000}
+#appScreen.counting #status,#appScreen.going #status,#appScreen.stopped #status{color:#fff}
+#historyPanel{display:none;position:fixed;z-index:50;inset:5%;background:#191919;border:2px solid #777;border-radius:12px;padding:16px;overflow:auto;box-shadow:0 0 0 100vmax #000c}
+#historyPanel.open{display:block}#historyPanel h2{margin:0 0 10px}#historyPanel p{font-size:13px;color:#ddd}
+#historyPanel table{border-collapse:collapse;width:100%;font-size:13px}#historyPanel td,#historyPanel th{padding:8px;border-bottom:1px solid #555;text-align:left}
+#historyPanel button{background:#444;margin:7px 0;padding:10px;font-size:15px}
+#historyBtn{background:#444}
+#saveInfo{font-size:12px;color:#aaa;text-align:center;padding:0 8px 5px}
 
-#clockFace{
- width:100%;
- height:100%;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:flex-start;
- gap:0;
- padding:0 12px;
-}
-
-#brandLogo{
- width:65%;
- height:23%;
- min-height:0;
- flex-shrink:0;
- object-fit:contain;
- object-position:center top;
+/* AKR WAKE LOCK */
+#wakeBtn{
+ width:auto;
  margin:0;
- padding:0;
+ padding:7px 10px;
+ border-radius:7px;
+ font-size:12px;
+ background:#222;
+ color:#ffb347;
+ border:1px solid #ffb347;
+ white-space:nowrap;
+}
+#wakeBtn.active{
+ color:#00e070;
+ border-color:#00e070;
+}
+#wakeBtn:disabled{
+ opacity:.8;
+ cursor:default;
 }
 
-#brandFallback{
- flex-shrink:0;
- margin:0;
- padding:0;
+@media(max-width:650px){
+ #bottom{gap:5px;padding:6px}
+ #bottom button{font-size:12px;padding:9px 3px}
+ #top{font-size:12px;padding:8px;flex-wrap:wrap}
+ #status{font-size:13px}
+ #historyPanel{inset:2%}
+ #wakeBtn{font-size:10px;padding:5px}
 }
 
-#clockDigits{
- flex:1;
- width:100%;
- height:auto;
- min-height:0;
- margin:0;
- padding:0;
- display:flex;
- align-items:center;
- justify-content:center;
-}
-
-#clockDigits svg{
- width:100%;
- height:100%;
- display:block;
- overflow:visible;
-}
-
-#clockValue{
- transform-box:fill-box;
- transform-origin:center;
- transform:scaleY(1.95);
-}
-
-#status{
- font-size:clamp(20px,5.5vw,76px);
- font-weight:900;
- line-height:1;
- padding:8px 10px 12px;
- margin:0;
-}
-
-#clock{
- overflow:hidden;
-}
-
-#top{
- padding:3px 12px;
-}
-
-#detail{
- padding:2px 8px 4px;
-}
-
+#appScreen{border:3px solid #ed0000}
+#top{padding:3px 12px;font-size:12px;flex-shrink:0;flex-wrap:nowrap}
+#topRight{display:flex;align-items:center;gap:10px}
+#settingsBtn{width:auto;margin:0;padding:3px 9px;background:#222;border:1px solid #666;font-size:22px}
+#clock,#lockedScreen{width:100%;height:100%;min-height:0;letter-spacing:normal}
+#clockFace{height:100%;display:flex;flex-direction:column;align-items:center;padding:0 12px;gap:0}
+#brandLogo{width:65%;height:23%;flex-shrink:0;object-fit:contain;object-position:center top}
+#brandFallback{font-size:clamp(20px,5vw,56px);font-weight:900;font-style:italic;line-height:1.1;flex-shrink:0}
+#brandFallback span{color:#ed0000}
+#clockDigits{flex:1;min-height:0;width:100%;padding:0 0 4px}
+#clockDigits svg{display:block;width:100%;height:100%}
+#status{font-size:clamp(20px,5.5vw,76px);font-weight:900;line-height:1.05;padding:6px 8px 10px;color:white;flex-shrink:0}
+#detail{padding:2px 8px 4px;flex-shrink:0}
+#appScreen.counting,#appScreen.stopped{border-color:#d60000}
+#appScreen.going{border-color:#00c83a}
+#appScreen.counting.finalFive{background:#ffd000;border-color:#ffd000}
+#appScreen.finalFive #countdown,#appScreen.finalFive #detail,#appScreen.finalFive #top{color:#000}
+#appScreen.counting #status,#appScreen.going #status,#appScreen.stopped #status{display:none}
+#settingsPanel{display:none;position:fixed;z-index:40;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92%,480px);max-height:94%;overflow:auto;background:#191919;border:1px solid #777;border-radius:14px;padding:16px;box-shadow:0 0 0 100vmax #000c}
+#settingsPanel.open{display:block}
+#settingsPanel h2{margin:0 0 8px;font-size:21px}
+#settingsPanel button{width:100%;margin:5px 0;padding:11px;font-size:15px;background:#444}
+#settingsPanel #stopBtn{background:#a90000}
+#bottom{display:flex;flex-direction:column;gap:0;padding:0}
+#settingsPanel.emergency #wakeBtn,#settingsPanel.emergency #fullscreenBtn,#settingsPanel.emergency #historyBtn,#settingsPanel.emergency #unlockBtn,#settingsPanel.emergency #logoutBtn,#settingsPanel.emergency #saveInfo{display:none}
+#fullscreenBtn.active{color:#00e070;border:1px solid #00e070}
+#fullscreenBtn.error{color:#ffb347}
 </style>
+</head>
+<body>
+<div id="loginScreen">
+ <h1>AKR REMOTE TABLET 🏁</h1>
+ <p>Logowanie stanowiska START</p>
+ <input id="email" type="email" placeholder="tablet@akr-test.example.com">
+ <input id="password" type="password" placeholder="Hasło">
+ <button id="loginBtn">ZALOGUJ</button>
+ <p id="loginStatus"></p>
+</div>
+
+<div id="appScreen">
+ <div id="top">
+  <span>START TIMER PRO v4.5 TEST</span>
+  <div id="topRight"><span id="connection">ŁĄCZENIE...</span><button id="settingsBtn" type="button" aria-label="Ustawienia" aria-expanded="false">⚙</button></div>
+ </div>
+ <div id="display"><div id="clock"><div id="clockFace"><img id="brandLogo" src="./akr-logo-stoper.png" alt="AKR WYNIKI LIVE"><div id="brandFallback" hidden>AKR WYNIKI <span>LIVE</span></div><div id="clockDigits"><svg viewBox="0 0 640 230" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><text id="clockValue" x="320" y="207" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="138" text-anchor="middle" textLength="605" lengthAdjust="spacingAndGlyphs" transform="translate(0 207) scale(1 1.95) translate(0 -207)" fill="white">00:00:00</text></svg></div></div></div><div id="countdown">30</div><div id="go">GO</div><div id="lockedScreen"><svg viewBox="0 0 600 340" width="100%" height="100%"><g fill="white" font-family="Arial,sans-serif" font-weight="900" text-anchor="middle"><text x="300" y="145" font-size="195" textLength="560" lengthAdjust="spacingAndGlyphs">STOP</text><text x="300" y="310" font-size="195">OS</text></g></svg></div></div>
+ <div id="status">OCZEKIWANIE NA START</div>
+ <div id="detail"></div>
+</div>
+<section id="settingsPanel"><h2>⚙ AKR · USTAWIENIA</h2><button id="wakeBtn" type="button" aria-pressed="true">● EKRAN: OCZEKIWANIE</button><button id="fullscreenBtn" type="button" aria-pressed="false">⛶ PEŁNY EKRAN</button>
+ <div id="saveInfo">Pomiary lokalne: 0 · Do wysłania: 0 · Do sprawdzenia w arkuszu: 0</div>
+ <div id="bottom"><button id="stopBtn">🛑 STOP OS</button><button id="unlockBtn">🔓 ODBLOKUJ</button><button id="historyBtn">HISTORIA</button><button id="logoutBtn">WYLOGUJ</button></div>
+<button id="closeSettingsBtn" type="button">ZAMKNIJ USTAWIENIA</button></section>
+
+<section id="historyPanel">
+ <h2>Historia START · TABLET V4</h2>
+ <p>Wysyłka Google Apps Script (no-cors) nie potwierdza zapisu w arkuszu. Status „Wysłano żądanie” oznacza: sprawdź Pomiary_Chrono. Nie kasuj historii przed weryfikacją.</p>
+ <table><thead><tr><th>OS</th><th>Załoga</th><th>Data</th><th>START</th><th>Status</th></tr></thead><tbody id="historyRows"></tbody></table>
+ <button id="retryBtn">PONÓW OCZEKUJĄCE</button>
+ <button id="exportBtn">EKSPORT CSV</button>
+ <button id="closeHistoryBtn">ZAMKNIJ</button>
+</section>
 
 <script>
-document.addEventListener('DOMContentLoaded',function(){
-
- document.title='AKR START TIMER v4.5 PRO DISPLAY';
-
- const version=document.querySelector('#top > span');
-
- if(version){
-  version.textContent='START TIMER PRO v4.5 TEST';
- }
-
- const svg=document.querySelector('#clockDigits svg');
-
- if(svg){
-  svg.setAttribute('viewBox','0 0 640 230');
-  svg.setAttribute('preserveAspectRatio','none');
- }
-
- const clock=document.getElementById('clockValue');
-
- if(clock){
-  clock.setAttribute('y','115');
- }
-
-});
+(()=>{
+ const logo=document.getElementById('brandLogo');
+ const fallback=()=>{logo.hidden=true;logo.style.display='none';document.getElementById('brandFallback').hidden=false};
+ logo.addEventListener('error',fallback);if(logo.complete&&!logo.naturalWidth)fallback();
+ const btn=document.getElementById('fullscreenBtn'),root=document.documentElement;
+ const supported=typeof root.requestFullscreen==='function'&&typeof document.exitFullscreen==='function'&&document.fullscreenEnabled!==false;
+ let busy=false,failed=false;
+ function render(){const active=!!document.fullscreenElement;btn.classList.toggle('active',active);btn.classList.toggle('error',failed);btn.setAttribute('aria-pressed',String(active));btn.disabled=!supported||busy;btn.textContent=!supported?'⛶ BRAK OBSŁUGI':active?'⛶ WYJDŹ Z PEŁNEGO':failed?'⛶ PONÓW':'⛶ PEŁNY EKRAN'}
+ btn.addEventListener('click',async()=>{const screen=document.getElementById('appScreen');if(!supported||busy||screen.classList.contains('counting')||screen.classList.contains('going'))return;busy=true;failed=false;render();try{if(document.fullscreenElement)await document.exitFullscreen();else await root.requestFullscreen()}catch(e){failed=true;console.warn(e)}finally{busy=false;render()}});
+ document.addEventListener('fullscreenchange',()=>{failed=false;render()});document.addEventListener('fullscreenerror',()=>{failed=true;render()});render();
+})();
 </script>
+<!-- AKR WAKE LOCK v1.0 -->
+<script>
+(function(){
+ "use strict";
+
+ const btn=document.getElementById('wakeBtn');
+ const supported=window.isSecureContext &&
+  !!navigator.wakeLock &&
+  typeof navigator.wakeLock.request==='function';
+
+ let enabled=true;
+ let sentinel=null;
+ let requesting=false;
+ let retryTimer=null;
+ let retries=0;
+ let suspended=false;
+
+ function clearRetry(){
+  if(retryTimer!==null){
+   clearTimeout(retryTimer);
+   retryTimer=null;
+  }
+ }
+
+ function render(){
+  const active=!!sentinel && !sentinel.released;
+
+  btn.classList.toggle('active',active);
+  btn.setAttribute('aria-pressed',String(enabled));
+
+  if(!supported){
+   btn.textContent='● EKRAN: BRAK OBSŁUGI';
+   btn.title='Przeglądarka nie obsługuje Wake Lock';
+   btn.disabled=true;
+  }else if(active){
+   btn.textContent='● EKRAN: ZAWSZE ON';
+   btn.title='Blokada aktywna. Kliknij, aby wyłączyć.';
+  }else if(!enabled){
+   btn.textContent='● EKRAN: AUTO';
+   btn.title='Blokada wyłączona. Kliknij, aby włączyć.';
+  }else if(requesting){
+   btn.textContent='● EKRAN: ŁĄCZENIE';
+   btn.title='Aktywowanie blokady ekranu';
+  }else{
+   btn.textContent='● EKRAN: NIEAKTYWNA';
+   btn.title='Blokada nieaktywna. Kliknij, aby ponowić.';
+  }
+ }
+
+ function scheduleRetry(){
+  if(!supported || !enabled || suspended ||
+     document.hidden || retries>=3 ||
+     retryTimer!==null)return;
+
+  retries++;
+  retryTimer=setTimeout(()=>{
+   retryTimer=null;
+   acquire();
+  },3000);
+ }
+
+ async function acquire(){
+  if(!supported || !enabled || suspended ||
+     document.hidden || requesting ||
+     (sentinel && !sentinel.released)){
+   render();
+   return;
+  }
+
+  clearRetry();
+  requesting=true;
+  render();
+
+  try{
+   const lock=await navigator.wakeLock.request('screen');
+
+   if(!enabled || suspended || document.hidden){
+    await lock.release();
+    return;
+   }
+
+   sentinel=lock;
+
+   lock.addEventListener('release',()=>{
+    if(sentinel===lock){
+     sentinel=null;
+     render();
+     scheduleRetry();
+    }
+   });
+
+   if(lock.released){
+    sentinel=null;
+    scheduleRetry();
+   }else{
+    retries=0;
+   }
+
+  }catch(error){
+   console.warn('AKR Wake Lock:',error);
+   scheduleRetry();
+  }finally{
+   requesting=false;
+   render();
+  }
+ }
+
+ async function release(){
+  clearRetry();
+
+  const lock=sentinel;
+
+  if(lock && !lock.released){
+   try{
+    await lock.release();
+   }catch(error){
+    console.warn('AKR Wake Lock release:',error);
+   }
+  }
+
+  if(sentinel===lock && (!lock || lock.released)){
+   sentinel=null;
+  }
+
+  render();
+ }
+
+ btn.addEventListener('click',()=>{
+  if(!supported)return;
+
+  if(sentinel && !sentinel.released){
+   enabled=false;
+   release();
+  }else if(requesting){
+   enabled=false;
+   clearRetry();
+   render();
+  }else{
+   enabled=true;
+   retries=0;
+   acquire();
+  }
+ });
+
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+   release();
+  }else{
+   retries=0;
+   acquire();
+  }
+ });
+
+ window.addEventListener('pagehide',()=>{
+  suspended=true;
+  release();
+ });
+
+ window.addEventListener('pageshow',()=>{
+  suspended=false;
+  retries=0;
+  acquire();
+ });
+
+ document.getElementById('loginBtn')
+  .addEventListener('click',()=>{
+   retries=0;
+   acquire();
+  });
+
+ render();
+ acquire();
+})();
+</script>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+
+const firebaseConfig={
+ apiKey:'AIzaSyCU1FXL73n3NXloigcNEBREIYfClktYLbQ',
+ authDomain:'akr-start-timer-remote.firebaseapp.com',
+ databaseURL:'https://akr-start-timer-remote-default-rtdb.europe-west1.firebasedatabase.app',
+ projectId:'akr-start-timer-remote',
+ appId:'1:463101905862:web:64c889a447de22ece380c7'
+};
+const TABLET_UID='jUcle8wKtmOh4Sng3X363fvG4gt2';
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbxwbRPdy_GlFdqOyzvFcEx1z5d4w3pmyqbTAsYglZlOV01290lMHCX8lKjwMIYYzPh8Lw/exec';
+const STORAGE_KEY='akr_remote_tablet_v4_records';
+const HALT_KEY='akr_remote_tablet_v4_halted';
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getDatabase(app);
+const $=id=>document.getElementById(id);
+const pad=(n,l=2)=>String(n).padStart(l,'0');
+const fmt=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const chronoTime=d=>`${fmt(d)},${pad(Math.floor(d.getMilliseconds()/10))}`;
+let connected=false,locked=false,running=false,goVisible=false;
+let lastCommandId=null,initialized=false,serverOffset=0;
+let countdownDeadline=0,countdownFrame=null,goTimeout=null,unsubscribeCommands=null;
+let activeCommand=null,scheduledStartEpoch=0;
+let sending=false,syncTimer=null;
+
+function readRecords(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)?x:[]}catch{return []}}
+function writeRecords(x){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(x));return true}catch{return false}}
+function updateRecord(id,patch){const a=readRecords(),r=a.find(x=>x.id===id);if(!r)return false;Object.assign(r,patch);return writeRecords(a)}
+function history(){
+ const a=readRecords(),pending=a.filter(r=>r.sync!=='verify');
+ $('saveInfo').textContent=`Pomiary lokalne: ${a.length} · Do wysłania: ${pending.length} · Do sprawdzenia w arkuszu: ${a.length-pending.length}`;
+ $('historyRows').replaceChildren();
+ for(const r of a.slice().reverse()){
+  const tr=document.createElement('tr');
+  const state=r.sync==='verify'?'Wysłano żądanie · sprawdź arkusz':r.sync==='sending'?'Wysyłanie…':'Oczekuje';
+  for(const v of [r.os,r.crew,r.date,r.time,state]){const td=document.createElement('td');td.textContent=v;tr.appendChild(td)}
+  $('historyRows').appendChild(tr);
+ }
+}
+function scheduleSync(delay=400){if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(sendPending,delay)}
+async function sendPending(){
+ if(sending||!navigator.onLine||auth.currentUser?.uid!==TABLET_UID)return;
+ sending=true;
+ try{
+  const todo=readRecords().filter(r=>r.sync==='pending'||r.sync==='sending');
+  for(const r of todo){
+   if(!navigator.onLine||auth.currentUser?.uid!==TABLET_UID)break;
+   const d=new Date(r.timestamp);
+   if(isNaN(d.getTime())||!/^OS[1-6]$/.test(r.os)||!/^\d{1,4}$/.test(r.crew))continue;
+   const payload={id:r.id,nr_startowy:r.crew,rodzaj_pomiaru:'START',odcinek:r.os,
+    timestamp:chronoTime(d),data_iso:r.timestamp,wersja:1};
+   if(!updateRecord(r.id,{sync:'sending'}))break;
+   history();
+   try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    if(!updateRecord(r.id,{sync:'verify'}))break;
+   }catch(e){updateRecord(r.id,{sync:'pending'});break}
+   history();
+  }
+ }finally{sending=false;history()}
+}
+function saveStart(){
+ if(!activeCommand)return false;
+ const d=new Date(scheduledStartEpoch);
+ const r={id:'AKRREM-'+activeCommand.id,crew:String(activeCommand.crew),os:activeCommand.os,
+  date:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
+  time:`${fmt(d)}.${pad(d.getMilliseconds(),3)}`,timestamp:d.toISOString(),sync:'pending'};
+ const a=readRecords();
+ if(a.some(x=>x.id===r.id))return true;
+ a.push(r);
+ if(!writeRecords(a)){
+  $('detail').textContent='BŁĄD ZAPISU LOKALNEGO · ZANOTUJ START RĘCZNIE';
+  return false;
+ }
+ history();scheduleSync();return true;
+}
+function closeSettings(){$('settingsPanel').classList.remove('open','emergency');$('settingsBtn').setAttribute('aria-expanded','false')}
+function closePanels(){closeSettings();$('historyPanel').classList.remove('open')}
+$('settingsBtn').onclick=()=>{const panel=$('settingsPanel');panel.classList.toggle('emergency',running||goVisible);$('settingsBtn').setAttribute('aria-expanded',String(panel.classList.toggle('open')))};
+$('closeSettingsBtn').onclick=closeSettings;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanels()});
+function status(s){$('status').textContent=s}
+function show(name){
+ if(name!=='clock')closePanels();
+ for(const id of ['clock','countdown','go','lockedScreen'])$(id).style.display=id===name?'block':'none';
+ const screen=$('appScreen');screen.classList.remove('counting','going','stopped','finalFive');
+ if(name==='countdown')screen.classList.add('counting');
+ else if(name==='go')screen.classList.add('going');
+ else if(name==='lockedScreen')screen.classList.add('stopped');
+}
+function cancelTimers(){
+ if(countdownFrame!==null){cancelAnimationFrame(countdownFrame);countdownFrame=null}
+ if(goTimeout!==null){clearTimeout(goTimeout);goTimeout=null}
+ running=false;goVisible=false;activeCommand=null;
+}
+function showIdle(){
+ cancelTimers();
+ if(locked){show('lockedScreen');status('OS ZABLOKOWANY')}
+ else{show('clock');status(connected?'OCZEKIWANIE NA START':'BRAK POŁĄCZENIA · START NIEDOSTĘPNY')}
+}
+function stopOS(source){
+ locked=true;
+ try{localStorage.setItem(HALT_KEY,'1')}catch{}
+ showIdle();$('detail').textContent='STOP OS · '+source;
+}
+function unlockOS(source){
+ closePanels();
+ locked=false;
+ try{localStorage.removeItem(HALT_KEY)}catch{}
+ showIdle();$('detail').textContent='ODBLOKOWANO · '+source;
+}
+function finishCountdown(){
+ if(!running)return;
+ running=false;goVisible=true;
+ const cmd=activeCommand;
+ show('go');status('GO!');$('detail').textContent='START!';
+ if(cmd&&!saveStart())$('detail').textContent='START! · BŁĄD ZAPISU LOKALNEGO';
+ goTimeout=setTimeout(()=>{goTimeout=null;goVisible=false;showIdle()},3000);
+}
+function tick(){
+ if(!running)return;
+ if(!connected||locked){stopOS('UTRATA POŁĄCZENIA');return}
+ const remaining=countdownDeadline-performance.now();
+ if(remaining<=0){finishCountdown();return}
+ const seconds=Math.ceil(remaining/1000);
+ $('countdown').textContent=String(seconds);
+ $('appScreen').classList.toggle('finalFive',seconds<=5);
+ countdownFrame=requestAnimationFrame(tick);
+}
+function startOS(command){
+ if(locked||running||goVisible||!connected)return;
+ // Bez dostępnej pamięci nie rozpoczynamy odliczania, którego nie da się zapisać.
+ try{const k='akr_remote_storage_test';localStorage.setItem(k,'1');localStorage.removeItem(k)}
+ catch{stopOS('BRAK PAMIĘCI LOKALNEJ');return}
+ cancelTimers();activeCommand={id:command.id,crew:String(command.crew),os:command.os};
+ running=true;countdownDeadline=performance.now()+30000;
+ scheduledStartEpoch=Date.now()+30000;
+ $('detail').textContent=command.os+' · ZAŁOGA '+command.crew;
+ status('ODLICZANIE DO STARTU');show('countdown');tick();
+}
+function handleCommand(command){
+ if(!command||!command.id||!command.type)return;
+ if(command.id===lastCommandId)return;
+ lastCommandId=command.id;
+ if(typeof command.issuedAt!=='number')return;
+ const age=Date.now()+serverOffset-command.issuedAt;
+ if(age>5000||age< -2000)return;
+ if(command.type==='STOP'){stopOS('PILOT');return}
+ if(command.type==='UNLOCK'){unlockOS('PILOT');return}
+ if(command.type==='START'){
+  if(!/^\d{1,4}$/.test(String(command.crew)))return;
+  if(!/^OS[1-6]$/.test(String(command.os)))return;
+  startOS(command);
+ }
+}
+function subscribeCommands(){
+ if(unsubscribeCommands)return;
+ unsubscribeCommands=onValue(ref(db,'remote/command'),snapshot=>{
+  const command=snapshot.val();
+  if(!initialized){initialized=true;lastCommandId=command?.id||null;return}
+  handleCommand(command);
+ },error=>{stopOS('BŁĄD ODCZYTU');status('BŁĄD ODCZYTU POLECEŃ: '+error.code)});
+}
+function unsubscribeAll(){if(unsubscribeCommands){unsubscribeCommands();unsubscribeCommands=null}initialized=false;lastCommandId=null}
+onValue(ref(db,'.info/serverTimeOffset'),snapshot=>{serverOffset=Number(snapshot.val())||0});
+onValue(ref(db,'.info/connected'),snapshot=>{
+ const wasConnected=connected;connected=snapshot.val()===true;
+ $('connection').textContent=connected?'● ONLINE':'● OFFLINE';
+ $('connection').style.color=connected?'#00e070':'#ff4444';
+ if(wasConnected&&!connected)stopOS('UTRATA INTERNETU');
+ else if(!running&&!goVisible&&!locked)showIdle();
+ if(connected)scheduleSync(600);
+});
+onAuthStateChanged(auth,user=>{
+ const ok=user?.uid===TABLET_UID;
+ $('loginScreen').style.display=ok?'none':'block';
+ $('appScreen').style.display=ok?'flex':'none';
+ if(ok){
+  try{locked=localStorage.getItem(HALT_KEY)==='1'}catch{}
+  subscribeCommands();showIdle();history();scheduleSync(900);
+ }else{
+  closePanels();unsubscribeAll();cancelTimers();
+  $('loginStatus').textContent=user?'To nie jest konto TABLETU.':'Zaloguj się kontem TABLETU.';
+ }
+});
+$('loginBtn').onclick=async()=>{
+ try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);$('password').value=''}
+ catch(e){$('loginStatus').textContent='Błąd logowania: '+e.code}
+};
+$('logoutBtn').onclick=()=>{if(running||goVisible){alert('Nie wylogowuj podczas odliczania lub GO.');return}signOut(auth)};
+$('stopBtn').onclick=()=>stopOS('TABLET · LOKALNIE');
+$('unlockBtn').onclick=()=>{if(running||goVisible)return;if(confirm('Odblokować OS na tablecie?'))unlockOS('TABLET · LOKALNIE')};
+$('historyBtn').onclick=()=>{if(running||goVisible)return;closeSettings();$('historyPanel').classList.add('open');history()};
+$('closeHistoryBtn').onclick=()=>$('historyPanel').classList.remove('open');
+$('retryBtn').onclick=()=>{scheduleSync(0);history()};
+$('exportBtn').onclick=()=>{
+ const lines=['OS;Numer załogi;Data;Godzina;ISO;ID;Status'];
+ for(const r of readRecords())lines.push([r.os,r.crew,r.date,r.time,r.timestamp,r.id,r.sync].join(';'));
+ const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+ const url=globalThis.URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='akr-remote-tablet-v4-historia.csv';a.click();setTimeout(()=>globalThis.URL.revokeObjectURL(url),2000);
+};
+function updateClock(){const now=new Date();$('clockValue').textContent=now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+window.addEventListener('online',()=>scheduleSync(300));
+window.addEventListener('beforeunload',e=>{if(running||goVisible){e.preventDefault();e.returnValue=''}});
+// Po powrocie z tła nie pozwalamy na spóźnione GO bez pewnego nadzoru.
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&running)stopOS('TABLET W TLE');if(!document.hidden)scheduleSync(300)});
+updateClock();setInterval(updateClock,200);history();
+</script>
+</body>
+</html>
