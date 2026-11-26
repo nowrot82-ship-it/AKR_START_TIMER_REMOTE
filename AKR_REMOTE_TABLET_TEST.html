@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AKR REMOTE TABLET v4.1 · WAKE LOCK</title>
+<title>AKR REMOTE TABLET v4.2 · FULLSCREEN</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
@@ -57,13 +56,47 @@ button{border:0;color:white;font-weight:900;cursor:pointer}
  cursor:default;
 }
 
+/* AKR FULLSCREEN */
+#fullscreenBtn{
+ width:auto;
+ margin:0;
+ padding:7px 10px;
+ border-radius:7px;
+ font-size:12px;
+ background:#222;
+ color:#fff;
+ border:1px solid #888;
+ white-space:nowrap;
+}
+#fullscreenBtn.active{
+ color:#00e070;
+ border-color:#00e070;
+}
+#fullscreenBtn:disabled{
+ opacity:.5;
+ cursor:default;
+}
+#fullscreenBtn.error{
+ color:#ffb347;
+ border-color:#ffb347;
+}
+html:fullscreen{
+ width:100%;
+ height:100%;
+ background:#000;
+}
+html:fullscreen body{
+ width:100%;
+ height:100%;
+}
+
 @media(max-width:650px){
  #bottom{gap:5px;padding:6px}
  #bottom button{font-size:12px;padding:9px 3px}
  #top{font-size:12px;padding:8px;flex-wrap:wrap}
  #status{font-size:13px}
  #historyPanel{inset:2%}
- #wakeBtn{font-size:10px;padding:5px}
+ #wakeBtn,#fullscreenBtn{font-size:10px;padding:5px}
 }
 </style>
 </head>
@@ -79,8 +112,9 @@ button{border:0;color:white;font-weight:900;cursor:pointer}
 
 <div id="appScreen">
  <div id="top">
-  <span>AKR REMOTE TABLET v4.1 TEST</span>
+  <span>AKR REMOTE TABLET v4.2 TEST</span>
   <button id="wakeBtn" type="button" aria-pressed="true">● EKRAN: OCZEKIWANIE</button>
+  <button id="fullscreenBtn" type="button" aria-pressed="false">⛶ PEŁNY EKRAN</button>
   <span id="connection">ŁĄCZENIE...</span>
  </div>
  <div id="status">OCZEKIWANIE NA START</div>
@@ -98,6 +132,89 @@ button{border:0;color:white;font-weight:900;cursor:pointer}
  <button id="exportBtn">EKSPORT CSV</button>
  <button id="closeHistoryBtn">ZAMKNIJ</button>
 </section>
+
+<!-- AKR FULLSCREEN v1.0 -->
+<script>
+(function(){
+ "use strict";
+
+ const btn=document.getElementById('fullscreenBtn');
+ const root=document.documentElement;
+
+ const supported=
+  typeof root.requestFullscreen==='function' &&
+  typeof document.exitFullscreen==='function' &&
+  document.fullscreenEnabled!==false;
+
+ let busy=false;
+ let failed=false;
+
+ function render(){
+  const active=!!document.fullscreenElement;
+
+  btn.classList.toggle('active',active);
+  btn.classList.toggle('error',failed);
+  btn.setAttribute('aria-pressed',String(active));
+  btn.disabled=!supported||busy;
+
+  if(!supported){
+   btn.textContent='⛶ BRAK OBSŁUGI';
+   btn.title='Przeglądarka nie obsługuje pełnego ekranu';
+  }else if(active){
+   btn.textContent='⛶ WYJDŹ Z PEŁNEGO';
+   btn.title='Powrót do normalnego widoku';
+  }else if(failed){
+   btn.textContent='⛶ PONÓW';
+   btn.title='Nie udało się włączyć pełnego ekranu. Spróbuj ponownie.';
+  }else{
+   btn.textContent='⛶ PEŁNY EKRAN';
+   btn.title='Ukryj paski przeglądarki';
+  }
+ }
+
+ btn.addEventListener('click',async()=>{
+  if(!supported||busy)return;
+
+  const appScreen=document.getElementById('appScreen');
+
+  // Nie zmieniamy trybu ekranu podczas odliczania lub GO.
+  if(appScreen.classList.contains('counting')||
+     appScreen.classList.contains('going')){
+   return;
+  }
+
+  busy=true;
+  failed=false;
+  render();
+
+  try{
+   if(document.fullscreenElement){
+    await document.exitFullscreen();
+   }else{
+    await root.requestFullscreen();
+   }
+  }catch(error){
+   failed=true;
+   console.warn('AKR Fullscreen:',error);
+  }finally{
+   busy=false;
+   render();
+  }
+ });
+
+ document.addEventListener('fullscreenchange',()=>{
+  failed=false;
+  render();
+ });
+
+ document.addEventListener('fullscreenerror',()=>{
+  failed=true;
+  render();
+ });
+
+ render();
+})();
+</script>
 
 <!-- AKR WAKE LOCK v1.0 -->
 <script>
